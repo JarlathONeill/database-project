@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Oct 20, 2023 at 10:42 AM
+-- Generation Time: Oct 20, 2023 at 02:32 PM
 -- Server version: 5.7.39
 -- PHP Version: 7.4.33
 
@@ -58,6 +58,14 @@ CREATE TABLE `accommodation_booking` (
   `accommodation_id` int(11) NOT NULL,
   `booking_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `accommodation_booking`
+--
+
+INSERT INTO `accommodation_booking` (`accommodation_booking_id`, `total_accommodation_cost`, `accommodation_id`, `booking_id`) VALUES
+(1, 639.00, 2, 2),
+(2, 97.75, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -120,6 +128,14 @@ CREATE TABLE `booking` (
   `address_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `booking`
+--
+
+INSERT INTO `booking` (`booking_id`, `booking_made_date`, `booking_start_date`, `booking_duration_nights`, `number_adults`, `number_children`, `guest_name`, `total_booking_cost`, `customer_id`, `address_id`) VALUES
+(1, '2023-08-01', '2023-09-28', 2, 2, 0, 'Caoimhe McKinney', 97.75, 1, 1),
+(2, '2023-05-14', '2023-05-28', 5, 1, 0, 'n/a', 639.00, 2, 2);
+
 -- --------------------------------------------------------
 
 --
@@ -130,9 +146,22 @@ CREATE TABLE `booking_line_item` (
   `booking_line_item_id` int(11) NOT NULL,
   `item_name` varchar(255) NOT NULL,
   `item_desc` varchar(255) NOT NULL,
+  `quantity` int(11) NOT NULL,
   `line_cost` double(10,2) NOT NULL,
-  `booking_id` int(11) NOT NULL
+  `total_line_cost` double(10,2) NOT NULL,
+  `booking_id` int(11) NOT NULL,
+  `currency_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `booking_line_item`
+--
+
+INSERT INTO `booking_line_item` (`booking_line_item_id`, `item_name`, `item_desc`, `quantity`, `line_cost`, `total_line_cost`, `booking_id`, `currency_id`) VALUES
+(1, 'Double Room - per night', '', 1, 97.75, 97.75, 1, 1),
+(2, 'Superior Double Room - per night', '', 5, 127.80, 639.00, 2, 2),
+(3, 'City Tax', 'Foreign visitor city tax', 1, 100.00, 100.00, 2, 2),
+(4, 'Late Check Out', 'Check out now availble until 1pm', 1, 20.00, 20.00, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -284,7 +313,8 @@ ALTER TABLE `booking`
 --
 ALTER TABLE `booking_line_item`
   ADD PRIMARY KEY (`booking_line_item_id`),
-  ADD KEY `FK_booking_booking_id_two` (`booking_id`);
+  ADD KEY `FK_booking_booking_id_two` (`booking_id`),
+  ADD KEY `FK_currency_currency_id` (`currency_id`);
 
 --
 -- Indexes for table `city`
@@ -331,7 +361,7 @@ ALTER TABLE `accommodation`
 -- AUTO_INCREMENT for table `accommodation_booking`
 --
 ALTER TABLE `accommodation_booking`
-  MODIFY `accommodation_booking_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `accommodation_booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `accommodation_type`
@@ -349,13 +379,13 @@ ALTER TABLE `address`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `booking_line_item`
 --
 ALTER TABLE `booking_line_item`
-  MODIFY `booking_line_item_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `booking_line_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `city`
@@ -423,7 +453,8 @@ ALTER TABLE `booking`
 -- Constraints for table `booking_line_item`
 --
 ALTER TABLE `booking_line_item`
-  ADD CONSTRAINT `FK_booking_booking_id_two` FOREIGN KEY (`booking_id`) REFERENCES `booking` (`booking_id`);
+  ADD CONSTRAINT `FK_booking_booking_id_two` FOREIGN KEY (`booking_id`) REFERENCES `booking` (`booking_id`),
+  ADD CONSTRAINT `FK_currency_currency_id` FOREIGN KEY (`currency_id`) REFERENCES `currency` (`currency_id`);
 
 --
 -- Constraints for table `property`
