@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Oct 20, 2023 at 02:32 PM
+-- Generation Time: Oct 23, 2023 at 06:22 PM
 -- Server version: 5.7.39
 -- PHP Version: 7.4.33
 
@@ -59,14 +59,6 @@ CREATE TABLE `accommodation_booking` (
   `booking_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `accommodation_booking`
---
-
-INSERT INTO `accommodation_booking` (`accommodation_booking_id`, `total_accommodation_cost`, `accommodation_id`, `booking_id`) VALUES
-(1, 639.00, 2, 2),
-(2, 97.75, 1, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -97,6 +89,8 @@ CREATE TABLE `address` (
   `address_line_1` varchar(255) NOT NULL,
   `address_line_2` varchar(255) NOT NULL,
   `postcode` varchar(255) NOT NULL,
+  `latitude` float NOT NULL,
+  `longitude` float NOT NULL,
   `city_id` int(11) NOT NULL,
   `country_region_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -105,9 +99,9 @@ CREATE TABLE `address` (
 -- Dumping data for table `address`
 --
 
-INSERT INTO `address` (`address_id`, `address_line_1`, `address_line_2`, `postcode`, `city_id`, `country_region_id`) VALUES
-(1, 'Butcher Street', '', 'BT48 6HL', 1, 1),
-(2, '1 Alexandriagade ', 'Østerbro', '2150', 2, 2);
+INSERT INTO `address` (`address_id`, `address_line_1`, `address_line_2`, `postcode`, `latitude`, `longitude`, `city_id`, `country_region_id`) VALUES
+(1, 'Butcher Street', '', 'BT48 6HL', 0, 0, 1, 1),
+(2, '1 Alexandriagade ', 'Østerbro', '2150', 0, 0, 2, 2);
 
 -- --------------------------------------------------------
 
@@ -124,7 +118,7 @@ CREATE TABLE `booking` (
   `number_children` int(11) NOT NULL,
   `guest_name` varchar(255) NOT NULL,
   `total_booking_cost` double(10,2) NOT NULL,
-  `customer_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `address_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -132,7 +126,7 @@ CREATE TABLE `booking` (
 -- Dumping data for table `booking`
 --
 
-INSERT INTO `booking` (`booking_id`, `booking_made_date`, `booking_start_date`, `booking_duration_nights`, `number_adults`, `number_children`, `guest_name`, `total_booking_cost`, `customer_id`, `address_id`) VALUES
+INSERT INTO `booking` (`booking_id`, `booking_made_date`, `booking_start_date`, `booking_duration_nights`, `number_adults`, `number_children`, `guest_name`, `total_booking_cost`, `user_id`, `address_id`) VALUES
 (1, '2023-08-01', '2023-09-28', 2, 2, 0, 'Caoimhe McKinney', 97.75, 1, 1),
 (2, '2023-05-14', '2023-05-28', 5, 1, 0, 'n/a', 639.00, 2, 2);
 
@@ -153,15 +147,30 @@ CREATE TABLE `booking_line_item` (
   `currency_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `booking_line_item`
+-- Table structure for table `business_user`
 --
 
-INSERT INTO `booking_line_item` (`booking_line_item_id`, `item_name`, `item_desc`, `quantity`, `line_cost`, `total_line_cost`, `booking_id`, `currency_id`) VALUES
-(1, 'Double Room - per night', '', 1, 97.75, 97.75, 1, 1),
-(2, 'Superior Double Room - per night', '', 5, 127.80, 639.00, 2, 2),
-(3, 'City Tax', 'Foreign visitor city tax', 1, 100.00, 100.00, 2, 2),
-(4, 'Late Check Out', 'Check out now availble until 1pm', 1, 20.00, 20.00, 1, 1);
+CREATE TABLE `business_user` (
+  `business_user_id` int(11) NOT NULL,
+  `business_number` int(11) NOT NULL,
+  `vat_number` int(11) NOT NULL,
+  `first_name` varchar(255) NOT NULL,
+  `last_name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `address_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `business_user`
+--
+
+INSERT INTO `business_user` (`business_user_id`, `business_number`, `vat_number`, `first_name`, `last_name`, `email`, `password`, `address_id`) VALUES
+(1, 1111, 1111, '', '', '', '', 0),
+(2, 2222, 2222, '', '', '', '', 0);
 
 -- --------------------------------------------------------
 
@@ -227,23 +236,15 @@ INSERT INTO `currency` (`currency_id`, `currency_name`, `currency_shortcode`, `c
 -- --------------------------------------------------------
 
 --
--- Table structure for table `customer`
+-- Table structure for table `points_of_interest`
 --
 
-CREATE TABLE `customer` (
-  `customer_id` int(11) NOT NULL,
-  `first_name` varchar(255) NOT NULL,
-  `last_name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL
+CREATE TABLE `points_of_interest` (
+  `points_of_interest_id` int(11) NOT NULL,
+  `points_of_interest_name` varchar(255) NOT NULL,
+  `points_of_interest_latitude` float NOT NULL,
+  `points_of_interest_longitude` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `customer`
---
-
-INSERT INTO `customer` (`customer_id`, `first_name`, `last_name`, `email`) VALUES
-(1, 'Jarlath', 'O\'Neill', 'jarlath.oneill95@gmail.com'),
-(2, 'Caoimhe', 'McKinney', 'caoimhemck360@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -255,16 +256,63 @@ CREATE TABLE `property` (
   `property_id` int(11) NOT NULL,
   `property_name` varchar(255) NOT NULL,
   `property_desc` text NOT NULL,
-  `address_id` int(11) NOT NULL
+  `address_id` int(11) NOT NULL,
+  `business_user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `property`
 --
 
-INSERT INTO `property` (`property_id`, `property_name`, `property_desc`, `address_id`) VALUES
-(1, 'Maldron Hotel Derry', 'The 4-star Maldron Hotel Derry is located within Derry’s historic city walls, offering luxurious accommodation and easy access to the city’s theatres, restaurants and shops.', 1),
-(2, 'Comwell Copenhagen Portside Dolce by Wyndham', 'Comwell Copenhagen Portside Dolce by Wyndham has a fitness centre, garden, a shared lounge and restaurant in Copenhagen. Featuring a bar, the 4-star hotel has air-conditioned rooms with free WiFi, each with a private bathroom. The accommodation features room service, a 24-hour front desk and luggage storage for guests.', 2);
+INSERT INTO `property` (`property_id`, `property_name`, `property_desc`, `address_id`, `business_user_id`) VALUES
+(1, 'Maldron Hotel Derry', 'The 4-star Maldron Hotel Derry is located within Derry’s historic city walls, offering luxurious accommodation and easy access to the city’s theatres, restaurants and shops.', 1, 1),
+(2, 'Comwell Copenhagen Portside Dolce by Wyndham', 'Comwell Copenhagen Portside Dolce by Wyndham has a fitness centre, garden, a shared lounge and restaurant in Copenhagen. Featuring a bar, the 4-star hotel has air-conditioned rooms with free WiFi, each with a private bathroom. The accommodation features room service, a 24-hour front desk and luggage storage for guests.', 2, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `property_surroundings_distance`
+--
+
+CREATE TABLE `property_surroundings_distance` (
+  `property_surroundings_distance_id` int(11) NOT NULL,
+  `property_surroundings_distance_metres` float NOT NULL,
+  `property_id` int(11) NOT NULL,
+  `points_of_interest_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user`
+--
+
+CREATE TABLE `user` (
+  `user_id` int(11) NOT NULL,
+  `first_name` varchar(255) NOT NULL,
+  `last_name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `address_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`user_id`, `first_name`, `last_name`, `email`, `password`, `address_id`) VALUES
+(1, 'Jarlath', 'O\'Neill', 'jarlath.oneill95@gmail.com', '', 0),
+(2, 'Caoimhe', 'McKinney', 'caoimhemck360@gmail.com', '', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_address`
+--
+
+CREATE TABLE `user_address` (
+  `user_address_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Indexes for dumped tables
@@ -305,7 +353,7 @@ ALTER TABLE `address`
 --
 ALTER TABLE `booking`
   ADD PRIMARY KEY (`booking_id`),
-  ADD KEY `FK_customer_customer_id` (`customer_id`),
+  ADD KEY `FK_customer_customer_id` (`user_id`),
   ADD KEY `FK_address_address_id` (`address_id`);
 
 --
@@ -315,6 +363,12 @@ ALTER TABLE `booking_line_item`
   ADD PRIMARY KEY (`booking_line_item_id`),
   ADD KEY `FK_booking_booking_id_two` (`booking_id`),
   ADD KEY `FK_currency_currency_id` (`currency_id`);
+
+--
+-- Indexes for table `business_user`
+--
+ALTER TABLE `business_user`
+  ADD PRIMARY KEY (`business_user_id`);
 
 --
 -- Indexes for table `city`
@@ -335,17 +389,38 @@ ALTER TABLE `currency`
   ADD PRIMARY KEY (`currency_id`);
 
 --
--- Indexes for table `customer`
+-- Indexes for table `points_of_interest`
 --
-ALTER TABLE `customer`
-  ADD PRIMARY KEY (`customer_id`);
+ALTER TABLE `points_of_interest`
+  ADD PRIMARY KEY (`points_of_interest_id`);
 
 --
 -- Indexes for table `property`
 --
 ALTER TABLE `property`
   ADD PRIMARY KEY (`property_id`),
-  ADD KEY `FK_address_address_id_two` (`address_id`);
+  ADD KEY `FK_address_address_id_two` (`address_id`),
+  ADD KEY `FK_business_user_business_user_id` (`business_user_id`);
+
+--
+-- Indexes for table `property_surroundings_distance`
+--
+ALTER TABLE `property_surroundings_distance`
+  ADD PRIMARY KEY (`property_surroundings_distance_id`),
+  ADD KEY `FK_points_of_interest_points_of_interest_id` (`points_of_interest_id`),
+  ADD KEY `FK_property_property_id_two` (`property_id`);
+
+--
+-- Indexes for table `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`user_id`);
+
+--
+-- Indexes for table `user_address`
+--
+ALTER TABLE `user_address`
+  ADD PRIMARY KEY (`user_address_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -361,7 +436,7 @@ ALTER TABLE `accommodation`
 -- AUTO_INCREMENT for table `accommodation_booking`
 --
 ALTER TABLE `accommodation_booking`
-  MODIFY `accommodation_booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `accommodation_booking_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `accommodation_type`
@@ -385,7 +460,13 @@ ALTER TABLE `booking`
 -- AUTO_INCREMENT for table `booking_line_item`
 --
 ALTER TABLE `booking_line_item`
-  MODIFY `booking_line_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `booking_line_item_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `business_user`
+--
+ALTER TABLE `business_user`
+  MODIFY `business_user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `city`
@@ -406,16 +487,34 @@ ALTER TABLE `currency`
   MODIFY `currency_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `customer`
+-- AUTO_INCREMENT for table `points_of_interest`
 --
-ALTER TABLE `customer`
-  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+ALTER TABLE `points_of_interest`
+  MODIFY `points_of_interest_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `property`
 --
 ALTER TABLE `property`
   MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `property_surroundings_distance`
+--
+ALTER TABLE `property_surroundings_distance`
+  MODIFY `property_surroundings_distance_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `user`
+--
+ALTER TABLE `user`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `user_address`
+--
+ALTER TABLE `user_address`
+  MODIFY `user_address_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -447,7 +546,7 @@ ALTER TABLE `address`
 --
 ALTER TABLE `booking`
   ADD CONSTRAINT `FK_address_address_id` FOREIGN KEY (`address_id`) REFERENCES `address` (`address_id`),
-  ADD CONSTRAINT `FK_customer_customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`);
+  ADD CONSTRAINT `FK_customer_customer_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`);
 
 --
 -- Constraints for table `booking_line_item`
@@ -460,7 +559,15 @@ ALTER TABLE `booking_line_item`
 -- Constraints for table `property`
 --
 ALTER TABLE `property`
-  ADD CONSTRAINT `FK_address_address_id_two` FOREIGN KEY (`address_id`) REFERENCES `address` (`address_id`);
+  ADD CONSTRAINT `FK_address_address_id_two` FOREIGN KEY (`address_id`) REFERENCES `address` (`address_id`),
+  ADD CONSTRAINT `FK_business_user_business_user_id` FOREIGN KEY (`business_user_id`) REFERENCES `business_user` (`business_user_id`);
+
+--
+-- Constraints for table `property_surroundings_distance`
+--
+ALTER TABLE `property_surroundings_distance`
+  ADD CONSTRAINT `FK_points_of_interest_points_of_interest_id` FOREIGN KEY (`points_of_interest_id`) REFERENCES `points_of_interest` (`points_of_interest_id`),
+  ADD CONSTRAINT `FK_property_property_id_two` FOREIGN KEY (`property_id`) REFERENCES `property` (`property_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
