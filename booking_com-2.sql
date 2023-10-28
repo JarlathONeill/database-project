@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Oct 28, 2023 at 12:49 PM
+-- Generation Time: Oct 28, 2023 at 03:44 PM
 -- Server version: 5.7.39
 -- PHP Version: 7.4.33
 
@@ -149,6 +149,15 @@ CREATE TABLE `card_type` (
   `card_type_name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `card_type`
+--
+
+INSERT INTO `card_type` (`card_type_id`, `card_type_name`) VALUES
+(1, 'American Express'),
+(2, 'Mastercard'),
+(3, 'Visa');
+
 -- --------------------------------------------------------
 
 --
@@ -288,10 +297,18 @@ CREATE TABLE `nationality` (
 CREATE TABLE `payment_details` (
   `payment_details_id` int(11) NOT NULL,
   `cardholder_name` varchar(255) NOT NULL,
-  `primary_account_number` int(16) NOT NULL,
+  `primary_account_number` varbinary(255) NOT NULL,
   `expiration_date` date NOT NULL,
   `card_type_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `payment_details`
+--
+
+INSERT INTO `payment_details` (`payment_details_id`, `cardholder_name`, `primary_account_number`, `expiration_date`, `card_type_id`) VALUES
+(1, 'Mr James Smith', 0x88779c62e571273fd6507d1a2ecf031055670b6826d9c65eae7eddcc68b0ef45, '2012-10-08', 3),
+(2, 'Mr James Smith', 0x88779c62e571273fd6507d1a2ecf031055670b6826d9c65eae7eddcc68b0ef45, '2012-10-08', 3);
 
 -- --------------------------------------------------------
 
@@ -401,19 +418,26 @@ CREATE TABLE `property_surroundings_distance` (
 
 CREATE TABLE `user` (
   `user_id` int(11) NOT NULL,
-  `first_name` varchar(255) NOT NULL,
-  `last_name` varchar(255) NOT NULL,
-  `email_address` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `address_id` int(11) NOT NULL,
-  `phone_number_id` int(11) NOT NULL,
-  `payment_details_id` int(11) NOT NULL,
-  `nationality_id` int(11) NOT NULL,
-  `gender_id` int(11) NOT NULL,
-  `passport_details_id` int(11) NOT NULL,
-  `currency_id` int(11) NOT NULL,
-  `language_id` int(11) NOT NULL
+  `first_name` varchar(255) DEFAULT NULL,
+  `last_name` varchar(255) DEFAULT NULL,
+  `email_address` varchar(255) DEFAULT NULL,
+  `password` varbinary(255) DEFAULT NULL,
+  `address_id` int(11) DEFAULT NULL,
+  `phone_number_id` int(11) DEFAULT NULL,
+  `payment_details_id` int(11) DEFAULT NULL,
+  `nationality_id` int(11) DEFAULT NULL,
+  `gender_id` int(11) DEFAULT NULL,
+  `passport_details_id` int(11) DEFAULT NULL,
+  `currency_id` int(11) DEFAULT NULL,
+  `language_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`user_id`, `first_name`, `last_name`, `email_address`, `password`, `address_id`, `phone_number_id`, `payment_details_id`, `nationality_id`, `gender_id`, `passport_details_id`, `currency_id`, `language_id`) VALUES
+(7, NULL, NULL, 'j.oneill@qub.ac.uk', 0x35643631353161346364393165343539643163383162333232313865323866633962636362396234636464623563, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -680,7 +704,7 @@ ALTER TABLE `business_user`
 -- AUTO_INCREMENT for table `card_type`
 --
 ALTER TABLE `card_type`
-  MODIFY `card_type_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `card_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `city`
@@ -746,7 +770,7 @@ ALTER TABLE `nationality`
 -- AUTO_INCREMENT for table `payment_details`
 --
 ALTER TABLE `payment_details`
-  MODIFY `payment_details_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `payment_details_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `phone_number`
@@ -800,7 +824,7 @@ ALTER TABLE `property_surroundings_distance`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
