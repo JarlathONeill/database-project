@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Oct 24, 2023 at 10:18 AM
+-- Generation Time: Oct 28, 2023 at 12:49 PM
 -- Server version: 5.7.39
 -- PHP Version: 7.4.33
 
@@ -48,6 +48,18 @@ CREATE TABLE `accommodation_booking` (
   `accommodation_booking_id` int(11) NOT NULL,
   `total_accommodation_cost` double(10,2) NOT NULL,
   `booking_id` int(11) NOT NULL,
+  `accommodation_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `accommodation_facilities`
+--
+
+CREATE TABLE `accommodation_facilities` (
+  `accommodation_facilities_id` int(11) NOT NULL,
+  `accommodation_facilities_name` varchar(255) NOT NULL,
   `accommodation_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -197,6 +209,57 @@ CREATE TABLE `gender` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `guest_review`
+--
+
+CREATE TABLE `guest_review` (
+  `guest_review_id` int(11) NOT NULL,
+  `guest_review_pro` varchar(255) NOT NULL,
+  `guest_review_con` varchar(255) NOT NULL,
+  `guest_name` varchar(255) NOT NULL,
+  `guest_country_of_origin` varchar(255) NOT NULL,
+  `guest_grouping` varchar(255) NOT NULL,
+  `date_stayed` date NOT NULL,
+  `number_of_nights_stayed` int(11) NOT NULL,
+  `property_response` varchar(255) NOT NULL,
+  `property_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `house_rules`
+--
+
+CREATE TABLE `house_rules` (
+  `house_rules_id` int(11) NOT NULL,
+  `check_in_time` time NOT NULL,
+  `check_out_time` time NOT NULL,
+  `cancellation_prepayment` text NOT NULL,
+  `children_and_beds` text NOT NULL,
+  `age_restriction` text NOT NULL,
+  `groups` text NOT NULL,
+  `accepted_payment_methods` text NOT NULL,
+  `smoking_allowed` tinyint(1) NOT NULL,
+  `pets_allowed` tinyint(1) NOT NULL,
+  `property_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `images`
+--
+
+CREATE TABLE `images` (
+  `images_id` int(11) NOT NULL,
+  `image_url` varchar(255) NOT NULL,
+  `image_alt_text` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `language`
 --
 
@@ -272,6 +335,54 @@ CREATE TABLE `property` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `property_brand`
+--
+
+CREATE TABLE `property_brand` (
+  `property_brand_id` int(11) NOT NULL,
+  `property_brand_name` varchar(255) NOT NULL,
+  `property_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `property_facilities`
+--
+
+CREATE TABLE `property_facilities` (
+  `property_facilities_id` int(11) NOT NULL,
+  `property_facilities_name` varchar(255) NOT NULL,
+  `property_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `property_image`
+--
+
+CREATE TABLE `property_image` (
+  `property_image_id` int(11) NOT NULL,
+  `property_id` int(11) NOT NULL,
+  `images_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `property_rating`
+--
+
+CREATE TABLE `property_rating` (
+  `property_rating_id` int(11) NOT NULL,
+  `amount_of_stars` int(11) NOT NULL,
+  `property_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `property_surroundings_distance`
 --
 
@@ -323,6 +434,13 @@ ALTER TABLE `accommodation_booking`
   ADD PRIMARY KEY (`accommodation_booking_id`),
   ADD KEY `FK_booking_booking_id_three` (`booking_id`),
   ADD KEY `FK_accommodation_accommodation_id` (`accommodation_id`);
+
+--
+-- Indexes for table `accommodation_facilities`
+--
+ALTER TABLE `accommodation_facilities`
+  ADD PRIMARY KEY (`accommodation_facilities_id`),
+  ADD KEY `FK_accommodation_accommodation_id_two` (`accommodation_id`);
 
 --
 -- Indexes for table `accommodation_type`
@@ -397,6 +515,26 @@ ALTER TABLE `gender`
   ADD PRIMARY KEY (`gender_id`);
 
 --
+-- Indexes for table `guest_review`
+--
+ALTER TABLE `guest_review`
+  ADD PRIMARY KEY (`guest_review_id`),
+  ADD KEY `FK_property_property_id_seven` (`property_id`);
+
+--
+-- Indexes for table `house_rules`
+--
+ALTER TABLE `house_rules`
+  ADD PRIMARY KEY (`house_rules_id`),
+  ADD KEY `FK_property_property_id_eight` (`property_id`);
+
+--
+-- Indexes for table `images`
+--
+ALTER TABLE `images`
+  ADD PRIMARY KEY (`images_id`);
+
+--
 -- Indexes for table `language`
 --
 ALTER TABLE `language`
@@ -433,7 +571,37 @@ ALTER TABLE `points_of_interest`
 --
 ALTER TABLE `property`
   ADD PRIMARY KEY (`property_id`),
-  ADD KEY `FK_business_user_business_user_id` (`business_user_id`);
+  ADD KEY `FK_business_user_business_user_id` (`business_user_id`),
+  ADD KEY `FK_address_address_id_three` (`address_id`);
+
+--
+-- Indexes for table `property_brand`
+--
+ALTER TABLE `property_brand`
+  ADD PRIMARY KEY (`property_brand_id`),
+  ADD KEY `FK_property_property_id_four` (`property_id`);
+
+--
+-- Indexes for table `property_facilities`
+--
+ALTER TABLE `property_facilities`
+  ADD PRIMARY KEY (`property_facilities_id`),
+  ADD KEY `FK_property_property_id_six` (`property_id`);
+
+--
+-- Indexes for table `property_image`
+--
+ALTER TABLE `property_image`
+  ADD PRIMARY KEY (`property_image_id`),
+  ADD KEY `FK_images_images_id` (`images_id`),
+  ADD KEY `FK_property_property_id_three` (`property_id`);
+
+--
+-- Indexes for table `property_rating`
+--
+ALTER TABLE `property_rating`
+  ADD PRIMARY KEY (`property_rating_id`),
+  ADD UNIQUE KEY `property_id` (`property_id`);
 
 --
 -- Indexes for table `property_surroundings_distance`
@@ -471,6 +639,12 @@ ALTER TABLE `accommodation`
 --
 ALTER TABLE `accommodation_booking`
   MODIFY `accommodation_booking_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `accommodation_facilities`
+--
+ALTER TABLE `accommodation_facilities`
+  MODIFY `accommodation_facilities_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `accommodation_type`
@@ -539,6 +713,24 @@ ALTER TABLE `gender`
   MODIFY `gender_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `guest_review`
+--
+ALTER TABLE `guest_review`
+  MODIFY `guest_review_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `house_rules`
+--
+ALTER TABLE `house_rules`
+  MODIFY `house_rules_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `images`
+--
+ALTER TABLE `images`
+  MODIFY `images_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `language`
 --
 ALTER TABLE `language`
@@ -575,6 +767,30 @@ ALTER TABLE `property`
   MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `property_brand`
+--
+ALTER TABLE `property_brand`
+  MODIFY `property_brand_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `property_facilities`
+--
+ALTER TABLE `property_facilities`
+  MODIFY `property_facilities_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `property_image`
+--
+ALTER TABLE `property_image`
+  MODIFY `property_image_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `property_rating`
+--
+ALTER TABLE `property_rating`
+  MODIFY `property_rating_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `property_surroundings_distance`
 --
 ALTER TABLE `property_surroundings_distance`
@@ -603,6 +819,12 @@ ALTER TABLE `accommodation`
 ALTER TABLE `accommodation_booking`
   ADD CONSTRAINT `FK_accommodation_accommodation_id` FOREIGN KEY (`accommodation_id`) REFERENCES `accommodation` (`accommodation_id`),
   ADD CONSTRAINT `FK_booking_booking_id_three` FOREIGN KEY (`booking_id`) REFERENCES `booking` (`booking_id`);
+
+--
+-- Constraints for table `accommodation_facilities`
+--
+ALTER TABLE `accommodation_facilities`
+  ADD CONSTRAINT `FK_accommodation_accommodation_id_two` FOREIGN KEY (`accommodation_id`) REFERENCES `accommodation` (`accommodation_id`);
 
 --
 -- Constraints for table `address`
@@ -636,6 +858,18 @@ ALTER TABLE `customer_user`
   ADD CONSTRAINT `FK_user_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`);
 
 --
+-- Constraints for table `guest_review`
+--
+ALTER TABLE `guest_review`
+  ADD CONSTRAINT `FK_property_property_id_seven` FOREIGN KEY (`property_id`) REFERENCES `property` (`property_id`);
+
+--
+-- Constraints for table `house_rules`
+--
+ALTER TABLE `house_rules`
+  ADD CONSTRAINT `FK_property_property_id_eight` FOREIGN KEY (`property_id`) REFERENCES `property` (`property_id`);
+
+--
 -- Constraints for table `nationality`
 --
 ALTER TABLE `nationality`
@@ -651,7 +885,33 @@ ALTER TABLE `payment_details`
 -- Constraints for table `property`
 --
 ALTER TABLE `property`
+  ADD CONSTRAINT `FK_address_address_id_three` FOREIGN KEY (`address_id`) REFERENCES `address` (`address_id`),
   ADD CONSTRAINT `FK_business_user_business_user_id` FOREIGN KEY (`business_user_id`) REFERENCES `business_user` (`business_user_id`);
+
+--
+-- Constraints for table `property_brand`
+--
+ALTER TABLE `property_brand`
+  ADD CONSTRAINT `FK_property_property_id_four` FOREIGN KEY (`property_id`) REFERENCES `property` (`property_id`);
+
+--
+-- Constraints for table `property_facilities`
+--
+ALTER TABLE `property_facilities`
+  ADD CONSTRAINT `FK_property_property_id_six` FOREIGN KEY (`property_id`) REFERENCES `property` (`property_id`);
+
+--
+-- Constraints for table `property_image`
+--
+ALTER TABLE `property_image`
+  ADD CONSTRAINT `FK_images_images_id` FOREIGN KEY (`images_id`) REFERENCES `images` (`images_id`),
+  ADD CONSTRAINT `FK_property_property_id_three` FOREIGN KEY (`property_id`) REFERENCES `property` (`property_id`);
+
+--
+-- Constraints for table `property_rating`
+--
+ALTER TABLE `property_rating`
+  ADD CONSTRAINT `FK_property_property_id_five` FOREIGN KEY (`property_id`) REFERENCES `property` (`property_id`);
 
 --
 -- Constraints for table `property_surroundings_distance`
