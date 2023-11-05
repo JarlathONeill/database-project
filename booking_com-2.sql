@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Nov 03, 2023 at 09:27 AM
+-- Generation Time: Nov 05, 2023 at 12:00 PM
 -- Server version: 5.7.39
 -- PHP Version: 7.4.33
 
@@ -46,7 +46,9 @@ CREATE TABLE `accommodation` (
 
 INSERT INTO `accommodation` (`accommodation_id`, `accommodation_name`, `date_forsale_from`, `date_forsale_to`, `price_per_night`, `quantity`, `number_adults`, `number_children`, `accommodation_type_id`, `property_id`) VALUES
 (1, 'Quadruple Room', '2024-07-08', '2024-07-12', '138.00', 1, 2, 2, 1, 1),
-(2, 'Two-Bedroom Apartment', '2024-07-08', '2024-07-12', '324.40', 1, 2, 2, 2, 2);
+(2, 'Two-Bedroom Apartment', '2024-07-08', '2024-07-12', '324.40', 1, 2, 2, 2, 2),
+(3, 'Family Room with Spa access', '2024-07-08', '2024-07-12', '268.80', 1, 2, 2, 1, 3),
+(4, 'Quadruple Room', '2024-07-15', '2024-07-19', '230.00', 1, 2, 2, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -100,13 +102,13 @@ INSERT INTO `accommodation_type` (`accommodation_type_id`, `accommodation_type_n
 
 CREATE TABLE `address` (
   `address_id` int(11) NOT NULL,
-  `address_line_1` varchar(255) NOT NULL,
-  `address_line_2` varchar(255) NOT NULL,
-  `postcode` varchar(255) NOT NULL,
-  `latitude` float NOT NULL,
-  `longitude` float NOT NULL,
-  `city_id` int(11) NOT NULL,
-  `country_region_id` int(11) NOT NULL
+  `address_line_1` varchar(255) DEFAULT NULL,
+  `address_line_2` varchar(255) DEFAULT NULL,
+  `postcode` varchar(255) DEFAULT NULL,
+  `latitude` decimal(10,7) DEFAULT NULL,
+  `longitude` decimal(10,7) DEFAULT NULL,
+  `city_id` int(11) DEFAULT NULL,
+  `country_region_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -114,8 +116,10 @@ CREATE TABLE `address` (
 --
 
 INSERT INTO `address` (`address_id`, `address_line_1`, `address_line_2`, `postcode`, `latitude`, `longitude`, `city_id`, `country_region_id`) VALUES
-(1, '3 Bd des Artisans', '77700 Bailly-Romainvilliers', '', 48.849, 2.83011, 1, 1),
-(2, '19 Avenue Henry Dunant', 'Villiers-sur-Marne', '', 33.3333, 44.4444, 1, 1);
+(1, '3 Bd des Artisans', '77700 Bailly-Romainvilliers', '', '49.0000000', '3.0000000', 1, 1),
+(2, '19 Avenue Henry Dunant', 'Villiers-sur-Marne', '', '33.0000000', '44.0000000', 1, 1),
+(3, 'Allee De La MAre Houleuse', '77700 Magny-le-Hongre', '', '56.0000000', '67.0000000', 1, 1),
+(4, '2 Killycanavan', 'Ardboe', '', '9.0000000', '10.0000000', 2, 2);
 
 -- --------------------------------------------------------
 
@@ -128,6 +132,13 @@ CREATE TABLE `area_code` (
   `area_code` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `area_code`
+--
+
+INSERT INTO `area_code` (`area_code_id`, `area_code`) VALUES
+(1, '+44');
+
 -- --------------------------------------------------------
 
 --
@@ -136,20 +147,29 @@ CREATE TABLE `area_code` (
 
 CREATE TABLE `booking` (
   `booking_id` int(11) NOT NULL,
-  `booking_made_date` date NOT NULL,
-  `booking_start_date` date NOT NULL,
-  `booking_duration_nights` int(11) NOT NULL,
-  `number_adults` int(11) NOT NULL,
-  `number_children` int(11) NOT NULL,
-  `guest_name` varchar(255) NOT NULL,
-  `total_booking_cost` decimal(10,2) NOT NULL,
-  `first_name` varchar(255) NOT NULL,
-  `last_name` varchar(255) NOT NULL,
-  `email_address` varchar(255) NOT NULL,
-  `country_region` varchar(255) NOT NULL,
-  `phone_number` varchar(255) NOT NULL,
-  `customer_user_id` int(11) NOT NULL
+  `booking_reference` varchar(255) NOT NULL,
+  `booking_made_date` date DEFAULT NULL,
+  `booking_start_date` date DEFAULT NULL,
+  `booking_duration_nights` int(11) DEFAULT NULL,
+  `number_adults` int(11) DEFAULT NULL,
+  `number_children` int(11) DEFAULT NULL,
+  `guest_name` varchar(255) DEFAULT NULL,
+  `total_booking_cost` decimal(10,2) DEFAULT NULL,
+  `first_name` varchar(255) DEFAULT NULL,
+  `last_name` varchar(255) DEFAULT NULL,
+  `email_address` varchar(255) DEFAULT NULL,
+  `country_region_id` int(11) DEFAULT NULL,
+  `phone_number_id` int(11) DEFAULT NULL,
+  `customer_user_id` int(11) DEFAULT NULL,
+  `address_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `booking`
+--
+
+INSERT INTO `booking` (`booking_id`, `booking_reference`, `booking_made_date`, `booking_start_date`, `booking_duration_nights`, `number_adults`, `number_children`, `guest_name`, `total_booking_cost`, `first_name`, `last_name`, `email_address`, `country_region_id`, `phone_number_id`, `customer_user_id`, `address_id`) VALUES
+(18, 'REF8.360246', '2023-11-03', '2024-07-08', 4, 2, 2, 'name', '600.00', ' ', ' ', ' ', 2, 1, NULL, 4);
 
 -- --------------------------------------------------------
 
@@ -166,6 +186,13 @@ CREATE TABLE `booking_line_item` (
   `total_line_cost` double(10,2) NOT NULL,
   `booking_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `booking_line_item`
+--
+
+INSERT INTO `booking_line_item` (`booking_line_item_id`, `item_name`, `item_desc`, `quantity`, `line_cost`, `total_line_cost`, `booking_id`) VALUES
+(11, 'Ace Hotel full payment', ' ', 1, 1.10, 690.00, 18);
 
 -- --------------------------------------------------------
 
@@ -223,7 +250,8 @@ CREATE TABLE `city` (
 --
 
 INSERT INTO `city` (`city_id`, `city_name`) VALUES
-(1, 'Paris');
+(1, 'Paris'),
+(2, 'Dungannon');
 
 -- --------------------------------------------------------
 
@@ -241,7 +269,8 @@ CREATE TABLE `country_region` (
 --
 
 INSERT INTO `country_region` (`country_region_id`, `country_region_name`) VALUES
-(1, 'France');
+(1, 'France'),
+(2, 'Ireland');
 
 -- --------------------------------------------------------
 
@@ -273,8 +302,7 @@ CREATE TABLE `customer_user` (
 --
 
 INSERT INTO `customer_user` (`customer_user_id`, `user_id`, `genius_id`) VALUES
-(2, 12, 12),
-(13, 13, 13);
+(15, 15, 15);
 
 -- --------------------------------------------------------
 
@@ -312,7 +340,9 @@ CREATE TABLE `genius` (
 
 INSERT INTO `genius` (`genius_id`, `genius_level`) VALUES
 (12, 1),
-(13, 1);
+(13, 1),
+(14, 1),
+(15, 1);
 
 -- --------------------------------------------------------
 
@@ -356,8 +386,8 @@ CREATE TABLE `house_rules` (
   `age_restriction` text,
   `groups` text,
   `accepted_payment_methods` text,
-  `smoking_allowed` tinyint(1) DEFAULT NULL,
-  `pets_allowed` tinyint(1) DEFAULT NULL,
+  `smoking_allowed` varchar(255) DEFAULT NULL,
+  `pets_allowed` varchar(255) DEFAULT NULL,
   `property_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -367,7 +397,8 @@ CREATE TABLE `house_rules` (
 
 INSERT INTO `house_rules` (`house_rules_id`, `check_in_time`, `check_out_time`, `cancellation_prepayment`, `children_and_beds`, `age_restriction`, `groups`, `accepted_payment_methods`, `smoking_allowed`, `pets_allowed`, `property_id`) VALUES
 (1, NULL, NULL, 'Free cancellation\r\nNo prepayment needed', NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(2, NULL, NULL, 'Free cancellation', NULL, NULL, NULL, NULL, NULL, NULL, 2);
+(2, NULL, NULL, 'Free cancellation', NULL, NULL, NULL, NULL, NULL, NULL, 2),
+(3, NULL, NULL, 'Non-refundable\r\nPay in advance', NULL, NULL, NULL, NULL, NULL, NULL, 3);
 
 -- --------------------------------------------------------
 
@@ -380,6 +411,13 @@ CREATE TABLE `images` (
   `image_url` varchar(255) NOT NULL,
   `image_alt_text` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `images`
+--
+
+INSERT INTO `images` (`images_id`, `image_url`, `image_alt_text`) VALUES
+(1, 'https://acehotel.com/ace-hotel-pic.jpg', 'Image of Ace Hotel');
 
 -- --------------------------------------------------------
 
@@ -428,7 +466,8 @@ CREATE TABLE `overall_guest_review` (
 
 INSERT INTO `overall_guest_review` (`overall_guest_review_id`, `overall_guest_rating`, `overall_staff_rating`, `overall_facilities_rating`, `overall_cleanliness_rating`, `overall_comfort_rating`, `overall_value_for_money_rating`, `overall_location_rating`, `overall_free_wifi_rating`, `property_id`) VALUES
 (1, '8.0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(2, '9.0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2);
+(2, '9.0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2),
+(3, '7.8', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 3);
 
 -- --------------------------------------------------------
 
@@ -464,8 +503,16 @@ CREATE TABLE `payment_details` (
 --
 
 INSERT INTO `payment_details` (`payment_details_id`, `cardholder_name`, `primary_account_number`, `expiration_date`, `card_type_id`) VALUES
-(1, 'Mr James Smith', 0x88779c62e571273fd6507d1a2ecf031055670b6826d9c65eae7eddcc68b0ef45, '2012-10-08', 3),
-(2, 'Mr James Smith', 0x88779c62e571273fd6507d1a2ecf031055670b6826d9c65eae7eddcc68b0ef45, '2012-10-08', 3);
+(5, 'Mr Jarlath ONeill', 0x88779c62e571273fd6507d1a2ecf031055670b6826d9c65eae7eddcc68b0ef45, '2012-10-08', 3),
+(6, 'Mr Jarlath ONeill', 0x88779c62e571273fd6507d1a2ecf031055670b6826d9c65eae7eddcc68b0ef45, '2012-10-08', 3),
+(8, 'Mr Jarlath ONeill', 0x88779c62e571273fd6507d1a2ecf031055670b6826d9c65eae7eddcc68b0ef45, '2012-10-08', 3),
+(10, 'Mr Jarlath ONeill', 0x88779c62e571273fd6507d1a2ecf031055670b6826d9c65eae7eddcc68b0ef45, '2012-10-08', 3),
+(11, 'Mr Jarlath ONeill', 0x88779c62e571273fd6507d1a2ecf031055670b6826d9c65eae7eddcc68b0ef45, '2012-10-08', 3),
+(12, 'Mr Jarlath ONeill', 0x88779c62e571273fd6507d1a2ecf031055670b6826d9c65eae7eddcc68b0ef45, '2012-10-08', 3),
+(13, 'Mr Jarlath ONeill', 0x88779c62e571273fd6507d1a2ecf031055670b6826d9c65eae7eddcc68b0ef45, '2012-10-08', 3),
+(14, 'Mr Jarlath ONeill', 0x88779c62e571273fd6507d1a2ecf031055670b6826d9c65eae7eddcc68b0ef45, '2012-10-08', 3),
+(15, 'Mr Jarlath ONeill', 0x88779c62e571273fd6507d1a2ecf031055670b6826d9c65eae7eddcc68b0ef45, '2012-10-08', 3),
+(16, 'Mr Jarlath ONeill', 0x88779c62e571273fd6507d1a2ecf031055670b6826d9c65eae7eddcc68b0ef45, '2012-10-08', 3);
 
 -- --------------------------------------------------------
 
@@ -476,8 +523,15 @@ INSERT INTO `payment_details` (`payment_details_id`, `cardholder_name`, `primary
 CREATE TABLE `phone_number` (
   `phone_number_id` int(11) NOT NULL,
   `area_code_id` int(11) NOT NULL,
-  `user_phone_number` int(11) NOT NULL
+  `user_phone_number` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `phone_number`
+--
+
+INSERT INTO `phone_number` (`phone_number_id`, `area_code_id`, `user_phone_number`) VALUES
+(1, 1, 7354572506);
 
 -- --------------------------------------------------------
 
@@ -519,7 +573,8 @@ CREATE TABLE `property` (
 
 INSERT INTO `property` (`property_id`, `property_name`, `property_desc`, `address_id`, `business_user_id`) VALUES
 (1, 'Ace Hôtel Paris Marne La Vallée', 'Ace Hôtel Paris Marne La Vallée offers accommodation in Bailly-Romainvillier, 5 km from Disneyland Paris. The property is 40 km from the centre of Paris.', 1, 1),
-(2, 'Cosy Colour Place', 'Boasting garden views, Cosy Colour Place offers accommodation with a balcony and a coffee machine, around 15 km from Paris-Gare-de-Lyon. This property offers access to a terrace, free private parking and free WiFi.', 2, 1);
+(2, 'Cosy Colour Place', 'Boasting garden views, Cosy Colour Place offers accommodation with a balcony and a coffee machine, around 15 km from Paris-Gare-de-Lyon. This property offers access to a terrace, free private parking and free WiFi.', 2, 1),
+(3, 'Radisson Blu Hotel Paris', 'The Radisson Blu Hotel Paris, Marne-la-Vallée sits on the Disneyland Paris Golf Course, just a 10-minute drive from Disneyland and 4 km from Val d\'Europe RER Station and shopping centre. ', 3, 1);
 
 -- --------------------------------------------------------
 
@@ -566,6 +621,13 @@ CREATE TABLE `property_image` (
   `images_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `property_image`
+--
+
+INSERT INTO `property_image` (`property_image_id`, `property_id`, `images_id`) VALUES
+(1, 1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -584,7 +646,8 @@ CREATE TABLE `property_rating` (
 
 INSERT INTO `property_rating` (`property_rating_id`, `amount_of_stars`, `property_id`) VALUES
 (2, 3, 1),
-(3, 4, 2);
+(3, 4, 2),
+(4, 5, 3);
 
 -- --------------------------------------------------------
 
@@ -605,7 +668,8 @@ CREATE TABLE `property_surroundings_distance` (
 
 INSERT INTO `property_surroundings_distance` (`property_surroundings_distance_id`, `property_surroundings_distance_metres`, `points_of_interest_id`, `property_id`) VALUES
 (1, 7100, 1, 1),
-(2, 9200, 1, 2);
+(2, 9200, 1, 2),
+(3, 6500, 1, 3);
 
 -- --------------------------------------------------------
 
@@ -636,9 +700,7 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`user_id`, `first_name`, `last_name`, `email_address`, `password`, `display_name`, `address_id`, `phone_number_id`, `payment_details_id`, `nationality_id`, `gender_id`, `passport_details_id`, `currency_id`, `language_id`) VALUES
 (8, 'Louis ', 'Moreau', 'l.moreau@acehotels.com', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(10, NULL, NULL, 'j.oneill@qub.ac.uk', 0x39306364393765303436666235393736623664636531663764653363636239653761303738643932363463343562, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(12, NULL, NULL, 'j.oneill@qub.ac.uk', 0x35326165393038353431353134373930643734653632333337643963353763366361363739643433336665656333, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(13, NULL, NULL, 'j.oneill@qub.ac.uk', 0x61646562353134373837616433303936636633383035643762373531626461333034376266366435336161383330, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+(15, NULL, NULL, 'j.oneill@qub.ac.uk', 0x62333938316136616534323164643864613139306331306534326339316132306134643366316534383539623064, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -692,7 +754,10 @@ ALTER TABLE `area_code`
 --
 ALTER TABLE `booking`
   ADD PRIMARY KEY (`booking_id`),
-  ADD KEY `FK_customer_user_customer_user_id` (`customer_user_id`);
+  ADD KEY `FK_customer_user_customer_user_id` (`customer_user_id`),
+  ADD KEY `FK_country_region_country_region_id_four` (`country_region_id`),
+  ADD KEY `FK_phone_number_phone_number_id_two` (`phone_number_id`),
+  ADD KEY `FK_address_address_id_four` (`address_id`);
 
 --
 -- Indexes for table `booking_line_item`
@@ -886,7 +951,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `accommodation`
 --
 ALTER TABLE `accommodation`
-  MODIFY `accommodation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `accommodation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `accommodation_booking`
@@ -910,25 +975,25 @@ ALTER TABLE `accommodation_type`
 -- AUTO_INCREMENT for table `address`
 --
 ALTER TABLE `address`
-  MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `area_code`
 --
 ALTER TABLE `area_code`
-  MODIFY `area_code_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `area_code_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `booking_line_item`
 --
 ALTER TABLE `booking_line_item`
-  MODIFY `booking_line_item_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `booking_line_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `business_user`
@@ -946,13 +1011,13 @@ ALTER TABLE `card_type`
 -- AUTO_INCREMENT for table `city`
 --
 ALTER TABLE `city`
-  MODIFY `city_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `city_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `country_region`
 --
 ALTER TABLE `country_region`
-  MODIFY `country_region_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `country_region_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `currency`
@@ -964,7 +1029,7 @@ ALTER TABLE `currency`
 -- AUTO_INCREMENT for table `customer_user`
 --
 ALTER TABLE `customer_user`
-  MODIFY `customer_user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `customer_user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `gender`
@@ -976,7 +1041,7 @@ ALTER TABLE `gender`
 -- AUTO_INCREMENT for table `genius`
 --
 ALTER TABLE `genius`
-  MODIFY `genius_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `genius_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `guest_review`
@@ -988,13 +1053,13 @@ ALTER TABLE `guest_review`
 -- AUTO_INCREMENT for table `house_rules`
 --
 ALTER TABLE `house_rules`
-  MODIFY `house_rules_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `house_rules_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `images`
 --
 ALTER TABLE `images`
-  MODIFY `images_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `images_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `language`
@@ -1012,7 +1077,7 @@ ALTER TABLE `nationality`
 -- AUTO_INCREMENT for table `overall_guest_review`
 --
 ALTER TABLE `overall_guest_review`
-  MODIFY `overall_guest_review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `overall_guest_review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `passport_details`
@@ -1024,13 +1089,13 @@ ALTER TABLE `passport_details`
 -- AUTO_INCREMENT for table `payment_details`
 --
 ALTER TABLE `payment_details`
-  MODIFY `payment_details_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `payment_details_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `phone_number`
 --
 ALTER TABLE `phone_number`
-  MODIFY `phone_number_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `phone_number_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `points_of_interest`
@@ -1042,7 +1107,7 @@ ALTER TABLE `points_of_interest`
 -- AUTO_INCREMENT for table `property`
 --
 ALTER TABLE `property`
-  MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `property_brand`
@@ -1060,25 +1125,25 @@ ALTER TABLE `property_facilities`
 -- AUTO_INCREMENT for table `property_image`
 --
 ALTER TABLE `property_image`
-  MODIFY `property_image_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `property_image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `property_rating`
 --
 ALTER TABLE `property_rating`
-  MODIFY `property_rating_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `property_rating_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `property_surroundings_distance`
 --
 ALTER TABLE `property_surroundings_distance`
-  MODIFY `property_surroundings_distance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `property_surroundings_distance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables
@@ -1115,7 +1180,10 @@ ALTER TABLE `address`
 -- Constraints for table `booking`
 --
 ALTER TABLE `booking`
-  ADD CONSTRAINT `FK_customer_user_customer_user_id` FOREIGN KEY (`customer_user_id`) REFERENCES `customer_user` (`customer_user_id`);
+  ADD CONSTRAINT `FK_address_address_id_four` FOREIGN KEY (`address_id`) REFERENCES `address` (`address_id`),
+  ADD CONSTRAINT `FK_country_region_country_region_id_four` FOREIGN KEY (`country_region_id`) REFERENCES `country_region` (`country_region_id`),
+  ADD CONSTRAINT `FK_customer_user_customer_user_id` FOREIGN KEY (`customer_user_id`) REFERENCES `customer_user` (`customer_user_id`),
+  ADD CONSTRAINT `FK_phone_number_phone_number_id_two` FOREIGN KEY (`phone_number_id`) REFERENCES `phone_number` (`phone_number_id`);
 
 --
 -- Constraints for table `booking_line_item`
